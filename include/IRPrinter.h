@@ -37,6 +37,7 @@ namespace Internal {
 
 class IRPrinter : public IRVisitor {
  public:
+    int domflag;
     IRPrinter() : IRVisitor() {
         indent = 0;
         print_range = false;

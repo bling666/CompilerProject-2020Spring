@@ -175,7 +175,6 @@ class Type {
     }
 
     friend std::ostream &operator<<(std::ostream& out, const Type &t) {
-        out << "(";
         if (t.code == TypeCode::Int) {
             out << "int";
         } else if (t.code == TypeCode::UInt) {
@@ -187,8 +186,6 @@ class Type {
         } else if (t.code == TypeCode::Handle) {
             out << "handle";
         }
-        out << t.bits << "_t ";
-        out << t.lanes_list << ")";
         return out;
     }
 

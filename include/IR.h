@@ -68,7 +68,7 @@ class Ref {
     template<typename U, typename std::enable_if<std::is_base_of<T, U>::value>::type* = nullptr>
     Ref(std::shared_ptr<U> _ptr) : ptr(_ptr) {}
 
-    bool defined() const { return ptr != nullptr; }
+    bool defined() { return ptr != nullptr; }
 
     T *get() const { return ptr.get(); }
 
@@ -169,9 +169,8 @@ class IRNode {
  * base node of expression
  */ 
 class ExprNode : public IRNode {
- private:
-    Type type_;
  public:
+    Type type_;
     ExprNode(Type _type, const IRNodeType node_type) : IRNode(node_type), type_(_type) {} 
 
     virtual ~ExprNode() = default;
