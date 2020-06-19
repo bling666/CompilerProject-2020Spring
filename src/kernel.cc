@@ -101,6 +101,13 @@ Type data_type ;
 			}
 			else
 			{
+				if(tokens[token_index].type==0)
+				std::cout<<"successfully match "<< tokens[token_index].stringValue <<'\n';
+				else if(tokens[token_index].type==1)
+				std::cout<<"successfully match "<< tokens[token_index].intValue <<'\n';
+				else if(tokens[token_index].type==2)
+				std::cout<<"successfully match "<< tokens[token_index].floatValue <<'\n';
+				else
 				std::cout<<"successfully match "<< (char)k <<'\n';
 			}
 			if(token_index == tokens.size() - 1)
@@ -713,7 +720,7 @@ Type data_type ;
 			}
 			else {
 				Token tok = match(2);
-				return FloatImm::make(Type::float_scalar(32), tok.intValue);
+				return FloatImm::make(Type::float_scalar(32), tok.floatValue);
 			}
 		}
 

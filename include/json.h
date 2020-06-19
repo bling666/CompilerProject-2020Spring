@@ -17,6 +17,7 @@ class json{
     vector<string> outs;
     string data_type;
     string kernel;
+    vector<string> grad_to;
 };
 json parse(char *filename);
 /* json_h */

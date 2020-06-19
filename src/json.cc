@@ -135,7 +135,27 @@ json parse(char *filename){
     }
     tmp.kernel=tmp_kernel;
     cout<<"parse success\n";
-    return tmp;
+    
+    infile.getline(buf,256);
+        obegin=-1;
+        for(int i=0;i<256;i++){
+            if(buf[i]=='['){
+                obegin=i+1;
+                break;
+            }
+        }
+        i=obegin;
+        while(1){
+            string tmpout;
+            while(1){
+                if(buf[i]==','||buf[i]==']') break;
+                tmpout.push_back(buf[i++]);
+            }
+            if(tmpout.size()>2) tmp.grad_to.push_back(tmpout.substr(1,tmpout.size()-2));
+            if(buf[i]==']') break;
+            else i+=2;
+        }
+        return tmp;
 }
 /*int main(){
     json res=parse("/Users/jiluyang/Desktop/CompilerProject-2020Spring-Part1/project1/cases/case10.json");
