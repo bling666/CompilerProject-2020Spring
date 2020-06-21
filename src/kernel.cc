@@ -20,7 +20,6 @@ namespace Boost{
 Type index_type = Type::int_scalar(32);
 Type data_type ;
  
-
 		class Myclass {   //Index's dom and name
 		public:
 			size_t dom;
@@ -56,7 +55,7 @@ Type data_type ;
 
 		std::vector<Expr> total_cond;
 		bool flag = false;
-
+		bool flag2 = false;
 		std::vector<Stmt> extra_stmt;
 		std::vector<std::vector<std::string> > extra_index;
         json res;
@@ -226,7 +225,7 @@ Type data_type ;
 
 			for(size_t i=0;i<extra_stmt.size();i++)
 			{
-				if(extra_index[i].size() == 0)
+				if(extra_index[i].size() == 0 && flag2==false)
 					tmp_sts.push_back(extra_stmt[i]);
 				else
 				{
@@ -244,9 +243,11 @@ Type data_type ;
 					}
 					Stmt wrong_stmt = extra_stmt[i];
 					Stmt if_stmt = extra_stmt[i];
-					for(size_t j=0;j<total_cond.size();j++)
+					if(!(flag2 == true && i == 0))	
+					{for(size_t j=0;j<total_cond.size();j++)
 					{
 						if_stmt = IfThenElse::make(total_cond[j], if_stmt, wrong_stmt);
+					}
 					}
 					Stmt iner_loop_nest = LoopNest::make(iner_loop, {if_stmt});
 					tmp_sts.push_back(iner_loop_nest);
@@ -401,7 +402,7 @@ Type data_type ;
 			if(look.type ==1 || look.type == 2)
 			{
 				 expr = Const(index_type, data_type);
-				 if(look.type == '*'||look.type == '/'||look.type == '%'||look.type == '3')
+				 if(look.type == '*'||look.type == '/'||look.type == '%'||look.type == 3)
 				 	return RHS1(index_type, data_type, expr);
 				 return expr;
 			}
@@ -410,14 +411,14 @@ Type data_type ;
 				match('(');
 				expr = RHS(index_type, data_type);
 				match(')');
-				if(look.type == '*'||look.type == '/'||look.type == '%'||look.type == '3')
+				if(look.type == '*'||look.type == '/'||look.type == '%'||look.type ==3)
 				 	return RHS1(index_type, data_type, expr);
 				 return expr;
 			}
 			else
 			{
 				expr =TSRef(index_type, data_type);
-				if(look.type == '*'||look.type == '/'||look.type == '%'||look.type == '3')
+				if(look.type == '*'||look.type == '/'||look.type == '%'||look.type == 3)
 				 	return RHS1(index_type, data_type, expr);
 				 return expr;
 			}
@@ -647,9 +648,11 @@ Type data_type ;
 					temp_record.push_back(tok.getname());
 			}
 			flag = false;
+			
 			Expr dom = Dom::make(index_type, 0, domsize);
 			Expr tokpr = Index::make(index_type, tok.getname(), dom, IndexType::Spatial);
 			Expr expr = IdExpr1(index_type, data_type, domsize, tok.stringValue,tokpr);
+			
 			if(flag == true)
 			{
 				Expr expr2 = Compare::make(index_type, CompareOpType::LT, expr, IntImm::make(Type::int_scalar(32), domsize));
@@ -665,6 +668,7 @@ Type data_type ;
 			if (look.type == '+') {
 				match('+');
 				if (look.type == 1) {
+					flag = true;
 					Token tok2 = match(1);
 					domsize -= tok2.intValue;
 					Expr tok2pr = IntImm::make(Type::int_scalar(32), tok2.intValue);
@@ -684,6 +688,9 @@ Type data_type ;
 				match('-');
 				if (look.type == 1) {
 					Token tok2 = match(1);
+					flag = true;
+					if(look.intValue == 1)
+						flag2 = true;
 					domsize += tok2.intValue;
 					Expr tok2pr = IntImm::make(Type::int_scalar(32), tok2.intValue);
 					Expr exp = Binary::make(data_type, BinaryOpType::Sub, tok, tok2pr);
@@ -699,6 +706,7 @@ Type data_type ;
 			}
 			else if (look.type == '*') {
 				match('*');
+				flag = true;
 				Token tok2 = match(1);
 				domsize /= tok2.intValue;
 				Expr tok2pr = IntImm::make(Type::int_scalar(32), tok2.intValue);
@@ -707,6 +715,7 @@ Type data_type ;
 			}
 			else if (look.type == '%') {
 				match('%');
+				flag = true;
 				Token tok2 = match(1);
 				domsize = tok2.intValue - 1;
 				Expr tok2pr = IntImm::make(Type::int_scalar(32), tok2.intValue);
@@ -715,6 +724,7 @@ Type data_type ;
 			}
 			else if (look.type == 3)// for //
 			{
+				flag = true;
 				match(3);
 				Token tok2 = match(1);
 				domsize = domsize * tok2.intValue -tok2.intValue+1;

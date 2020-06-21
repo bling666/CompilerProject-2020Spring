@@ -7,7 +7,6 @@
 #include<algorithm>
 #include<map>
 #include<vector>
-
 //using namespace Boost::Internal;
 namespace Boost{
 	namespace Internal{
