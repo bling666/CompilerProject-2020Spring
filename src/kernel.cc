@@ -627,7 +627,7 @@ Type data_type ;
 
 		}
 		// IdExpr ::= Id IdExpr1 
-		//IdExpr1 ::=  + IdExpr IdExpr1| + IntV IdExpr1| * IntV IdExpr1|  // IntV IdExpr1|  % IntV IdExpr1|e
+		//IdExpr1 ::=  + IdExpr IdExpr1|- IdExpr IdExpr1| + IntV IdExpr1| * IntV IdExpr1|  // IntV IdExpr1|  % IntV IdExpr1|e
 		Expr IdExpr(Type index_type, Type data_type, int domsize) {
 			//ƥ���ʶ����ʹ��tok������
 			Token tok = match(ID);
@@ -653,7 +653,9 @@ Type data_type ;
 			if(flag == true)
 			{
 				Expr expr2 = Compare::make(index_type, CompareOpType::LT, expr, IntImm::make(Type::int_scalar(32), domsize));
+				Expr expr3 = Compare::make(index_type, CompareOpType::GE, expr, IntImm::make(Type::int_scalar(32), 0));
 				total_cond.push_back(expr2);
+				total_cond.push_back(expr3);
 			}
 			return expr;
 		}
@@ -677,6 +679,23 @@ Type data_type ;
 					return IdExpr1(index_type, data_type, domsize, id,exp);
 				}
 				
+			}
+			else if (look.type == '-') {
+				match('-');
+				if (look.type == 1) {
+					Token tok2 = match(1);
+					domsize += tok2.intValue;
+					Expr tok2pr = IntImm::make(Type::int_scalar(32), tok2.intValue);
+					Expr exp = Binary::make(data_type, BinaryOpType::Sub, tok, tok2pr);
+					return IdExpr1(index_type, data_type, domsize, id, exp);
+				}
+				else {
+					Expr expr = IdExpr(index_type, data_type, domsize);
+					flag = true;
+					Expr exp = Binary::make(data_type, BinaryOpType::Sub, tok, expr);
+					return IdExpr1(index_type, data_type, domsize, id, exp);
+				}
+
 			}
 			else if (look.type == '*') {
 				match('*');

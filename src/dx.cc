@@ -36,21 +36,24 @@ namespace Boost
             int token_index; //index for tokens
             Token look;      //next token
 
-
+			bool flag1 = 0;
 
             std::vector<Token> newtok;
             void autodiff(std::vector<Token> tok)
             {
                 int size = tok.size();
                 int sum = 0;
+			
                 newtok.insert(newtok.end(), leftdiff.begin(), leftdiff.end());
                 for (int i = 0; i < size; i++)
                 {
+				
                     Token tmp = tok[i];
                     if (tmp.type == 0)
                     {
                         if (tmp.stringValue == nowdiff.stringValue)
                         {
+						
                             int start = i;
                             if (sum == 0)
                             {
@@ -64,17 +67,24 @@ namespace Boost
                                 i++;
                             }
                             sum++;
+							std::cout << "4\n" ;
                             if (left_row.empty())
                             {
+								for (int j = 0; j < tok.size(); j++)
+									std::cout << tok[j].type;
+								std::cout << "\n"<<start;
+								std::cout << " "<<i<<"\n";
                                 left_row.insert(left_row.end(), tok.begin() + start, tok.begin() + i);
                             }
                         }
                     }
-					if(i==size)
+					if (i == size)
 						break;
+					
                     newtok.push_back(tok[i]);
                 }
                 Token mytok2;
+				
                 if (sum == 0)
                 {
                     newtok.clear();
@@ -96,7 +106,160 @@ namespace Boost
                     newtok.push_back(mytok2);
                 }
             }
+			class change {
+			public:
+				Token need_tochange;
+				std::vector<Token> Change_to;
+			};
+			std::vector<change> Change;
+			std::string change_token() {
+				bool flag = 1;
+				std::vector<Token> change_result;
+				int count = 0;
+				Change.clear();
+				for (int i = 0; i < merge_result.size(); i++)
+				{
+					if (flag == 1) {
+						if (merge_result[i].type == '+') {
+							count++;
+							change tmp;
+							Token tmp2;
+							Token tmp3;
+							tmp3.type = '-';
+							tmp2.type = 0;
+							tmp.need_tochange = merge_result[i - 1];
+							change_result.pop_back();
+							std::string temp_name = "tmp";
+							temp_name += std::to_string(count);
+							tmp2.stringValue = temp_name;
+							change_result.push_back(tmp2);
+							tmp.Change_to.push_back(tmp2);
+							tmp.Change_to.push_back(tmp3);
+							tmp.Change_to.push_back(merge_result[i + 1]);
+							Change.push_back(tmp);
+							i += 2;
+						}
+						else if (merge_result[i].type == '-') {
+							count++;
+							change tmp;
+							Token tmp2;
+							Token tmp3;
+							tmp3.type = '+';
+							tmp2.type = 0;
+							tmp.need_tochange = merge_result[i - 1];
+							change_result.pop_back();
+							std::string temp_name = "tmp";
+							temp_name += std::to_string(count);
+							tmp2.stringValue = temp_name;
+							change_result.push_back(tmp2);
+							tmp.Change_to.push_back(tmp2);
+							tmp.Change_to.push_back(tmp3);
+							tmp.Change_to.push_back(merge_result[i + 1]);
+							Change.push_back(tmp);
+							i += 2;
+						}
+						else if (merge_result[i].type == '*') {
+							count++;
+							change tmp;
+							Token tmp2;
+							Token tmp3;
+							tmp3.type = 3;
+							tmp2.type = 0;
+							tmp.need_tochange = merge_result[i - 1];
+							change_result.pop_back();
+							std::string temp_name = "tmp";
+							temp_name += std::to_string(count);
+							tmp2.stringValue = temp_name;
+							change_result.push_back(tmp2);
+							tmp.Change_to.push_back(tmp2);
+							tmp.Change_to.push_back(tmp3);
+							tmp.Change_to.push_back(merge_result[i + 1]);
+							Change.push_back(tmp);
+							i += 2;
+						}
+						else if (merge_result[i].type == 3) {
+							count++;
+							change tmp;
+							Token tmp2;
+							Token tmp3;
+							tmp3.type = '*';
+							tmp2.type = 0;
+							tmp.need_tochange = merge_result[i - 1];
+							change_result.pop_back();
+							std::string temp_name = "tmp";
+							temp_name += std::to_string(count);
+							tmp2.stringValue = temp_name;
+							change_result.push_back(tmp2);
+							tmp.Change_to.push_back(tmp2);
+							tmp.Change_to.push_back(tmp3);
+							tmp.Change_to.push_back(merge_result[i + 1]);
+							Change.push_back(tmp);
+							i += 2;
+						}
+						else if (merge_result[i].type == '%') {
+							count++;
+							change tmp;
+							Token tmp2;
+							tmp2.type = 0;
+							tmp.need_tochange = merge_result[i - 1];
+							change_result.pop_back();
+							std::string temp_name = "tmp";
+							temp_name += std::to_string(count);
+							tmp2.stringValue = temp_name;
+							change_result.push_back(tmp2);
+							tmp.Change_to.push_back(tmp2);
+							Change.push_back(tmp);
+							i += 2;
+						}
+					}
+					bool flag2 = 0;
 
+					if (merge_result[i].type == '=')
+						flag = 0;
+					if (flag == 0) {
+						if (merge_result[i].type == 0) {
+
+							for (int j = 0; j < Change.size(); j++) {
+								if (Change[j].need_tochange.stringValue == merge_result[i].stringValue) {
+									if (flag2 == 1) {
+										Token tmp3;
+										tmp3.type = '+';
+										change_result.push_back(tmp3);
+									}
+									change_result.insert(change_result.end(), Change[j].Change_to.begin(), Change[j].Change_to.end());
+									flag2 = 1;
+								}
+							}
+						}
+					}
+					if (flag2 == 0) {
+					change_result.push_back(merge_result[i]);
+					}
+
+				}
+				std::string final_result;
+				for (int i = 0; i < change_result.size(); i++)
+				{
+					int type = change_result[i].type;
+					if (type == 0)
+						final_result.append(change_result[i].stringValue.c_str());
+					else if (type == 1)
+						final_result.append(std::to_string(change_result[i].intValue));
+					else if (type == 2)
+						if (change_result[i].floatValue == 0.0)
+							final_result.append(std::to_string(0.0));
+						else
+							final_result.append(std::to_string(change_result[i].floatValue));
+					else if (type == 3)
+						final_result.append("//");
+					else
+					{
+						final_result = final_result + ((char)change_result[i].type);
+					}
+				}
+				std::cout << final_result << std::endl;
+				return final_result;
+			}
             Token match(int k)
             {
                 if (tokens[token_index].type != k)
@@ -126,7 +289,7 @@ namespace Boost
                 }
                 else
                 {
-                    if (k != '+' && k != '-')
+                    if (flag1==0)
                         need_to_handle.push_back(tokens[token_index]);
                     token_index++;
                     look = tokens[token_index];
@@ -229,7 +392,9 @@ namespace Boost
 
                 if (look.type == '+')
                 {
+					flag1 = 1;
                     match('+');
+					flag1 = 0;
                     RHS();
                 }
                 else if (look.type == '*')
@@ -239,7 +404,9 @@ namespace Boost
                 }
                 else if (look.type == '-')
                 {
+					flag1 = 1;
                     match('-');
+					flag1 = 0;
                     RHS();
                 }
                 else if (look.type == '%')
@@ -473,7 +640,7 @@ namespace Boost
             nowdiff.stringValue = grad_to[0];
             P();
             std::string final_result;
-            for(int i = 0;i<merge_result.size();i++)
+         /*   for(int i = 0;i<merge_result.size();i++)
             {
                     int type = merge_result[i].type;
                     if (type == 0)
@@ -489,13 +656,14 @@ namespace Boost
                     {
                         final_result = final_result+((char)merge_result[i].type);
                     }
-            }
+            }*/
+			final_result=change_token();
             in.clear();
             in.insert(in.end(),ins.begin(),ins.end());
             out.clear();
             out.insert(out.end(),outs.begin(),outs.end());
             std::cout<<final_result<<std::endl;
-               return final_result;
+                return final_result;
             }
             
         } // namespace dx

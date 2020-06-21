@@ -15,9 +15,13 @@ float temp3[2][8][5][5];
           for (int c = 0;c < 16;c++) {
             for (int r = 0;r < 3;r++) {
               for (int s = 0;s < 3;s++) {
-                if ((q + s) < 7) {
-                  if ((p + r) < 7) {
-                    temp3[n][k][p][q] = (temp3[n][k][p][q] + (B[n][c][(p + r)][(q + s)] * C[k][c][r][s]));
+                if ((q + s) >= 0) {
+                  if ((q + s) < 7) {
+                    if ((p + r) >= 0) {
+                      if ((p + r) < 7) {
+                        temp3[n][k][p][q] = (temp3[n][k][p][q] + (B[n][c][(p + r)][(q + s)] * C[k][c][r][s]));
+                      }
+                    }
                   }
                 }
               }
