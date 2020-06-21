@@ -70,6 +70,8 @@ namespace Boost
                             }
                         }
                     }
+					if(i==size)
+						break;
                     newtok.push_back(tok[i]);
                 }
                 Token mytok2;
@@ -493,7 +495,7 @@ namespace Boost
             out.clear();
             out.insert(out.end(),outs.begin(),outs.end());
             std::cout<<final_result<<std::endl;
-                return final_result;
+               return final_result;
             }
             
         } // namespace dx
