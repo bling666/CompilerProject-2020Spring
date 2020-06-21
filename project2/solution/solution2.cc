@@ -82,7 +82,7 @@ int main() {
 
       }
 
-
+     
       std::cout<<"ins "<<std::endl;
        for(int i = 0;i<in.size();i++)
         std::cout<<json_config.ins[i]<<std::endl;
