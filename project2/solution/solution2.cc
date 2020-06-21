@@ -14,7 +14,7 @@ int main() {
     /* add your solutions */
     for(int i =1;i<=10;i++)
     {
-      if( i=6 || i==8 || i == 10)
+      if( i==6 || i==8 || i == 10)
         continue;
       std::string src = "./cases/case"+to_string(i)+".json";
       std::cout<<src<<endl;
